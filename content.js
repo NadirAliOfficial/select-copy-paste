@@ -96,13 +96,20 @@
   });
 
   // Double-click an editable field → paste at the cursor
-  document.addEventListener("dblclick", async () => {
-    if (!enabled) return;
-    if (!isEditable(document.activeElement)) return;
+  document.addEventListener("dblclick", async (e) => {
+    console.log("[SCP] dblclick fired. target:", e.target.tagName, "activeElement:", document.activeElement?.tagName, "isContentEditable:", document.activeElement?.isContentEditable);
+    if (!enabled) { console.log("[SCP] extension disabled, aborting"); return; }
+    if (!isEditable(document.activeElement)) { console.log("[SCP] activeElement not editable, aborting"); return; }
     try {
       const text = await navigator.clipboard.readText();
-      if (text) document.execCommand("insertText", false, text);
-    } catch (_) {}
+      console.log("[SCP] clipboard read ok, length:", text.length);
+      if (text) {
+        const result = document.execCommand("insertText", false, text);
+        console.log("[SCP] execCommand insertText returned:", result, "| activeElement text now:", document.activeElement?.textContent?.slice(0, 60));
+      }
+    } catch (err) {
+      console.log("[SCP] clipboard read FAILED:", err.message);
+    }
   });
 
   // Insert requests coming from the popup (history/pin clicks)
