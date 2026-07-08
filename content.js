@@ -95,21 +95,32 @@
     debounceTimer = setTimeout(maybeCopySelection, 300);
   });
 
-  // Double-click an editable field → paste at the cursor
-  document.addEventListener("dblclick", async (e) => {
-    console.log("[SCP] dblclick fired. target:", e.target.tagName, "activeElement:", document.activeElement?.tagName, "isContentEditable:", document.activeElement?.isContentEditable);
-    if (!enabled) { console.log("[SCP] extension disabled, aborting"); return; }
-    if (!isEditable(document.activeElement)) { console.log("[SCP] activeElement not editable, aborting"); return; }
+  // Some sites (e.g. WhatsApp Web) set a Permissions-Policy that blocks the
+  // Clipboard API outright for every script on the page, extensions included.
+  // Fall back to our own tracked copy history when the real API is blocked.
+  function getFallbackText() {
+    if (lastCopied) return Promise.resolve(lastCopied);
+    return new Promise((resolve) => {
+      chrome.storage.local.get({ scp_history: [] }, (d) => resolve(d.scp_history[0]?.text || ""));
+    });
+  }
+
+  async function getClipboardText() {
     try {
       const text = await navigator.clipboard.readText();
-      console.log("[SCP] clipboard read ok, length:", text.length);
-      if (text) {
-        const result = document.execCommand("insertText", false, text);
-        console.log("[SCP] execCommand insertText returned:", result, "| activeElement text now:", document.activeElement?.textContent?.slice(0, 60));
-      }
-    } catch (err) {
-      console.log("[SCP] clipboard read FAILED:", err.message);
+      if (text) return text;
+    } catch (_) {
+      // Clipboard API blocked by page policy — use our own history instead
     }
+    return getFallbackText();
+  }
+
+  // Double-click an editable field → paste at the cursor
+  document.addEventListener("dblclick", async () => {
+    if (!enabled) return;
+    if (!isEditable(document.activeElement)) return;
+    const text = await getClipboardText();
+    if (text) document.execCommand("insertText", false, text);
   });
 
   // Insert requests coming from the popup (history/pin clicks)
