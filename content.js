@@ -67,14 +67,16 @@
     if (!text.trim() || text === lastCopied) return;
     if (isPasswordField(document.activeElement)) return;
 
-    navigator.clipboard.writeText(text).then(() => {
-      lastCopied = text;
-      pushHistory(text);
-      try {
-        const rect = sel.getRangeAt(0).getBoundingClientRect();
-        showToast(rect);
-      } catch (_) {}
-    }).catch(() => {});
+    // Track internally right away — some pages (e.g. WhatsApp Web) block the
+    // real Clipboard API entirely, but our own history/paste flow still works.
+    lastCopied = text;
+    pushHistory(text);
+    try {
+      const rect = sel.getRangeAt(0).getBoundingClientRect();
+      showToast(rect);
+    } catch (_) {}
+
+    navigator.clipboard.writeText(text).catch(() => {}); // best-effort real clipboard sync
   }
 
   function insertText(text) {
