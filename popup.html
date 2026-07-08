@@ -60,7 +60,17 @@
     min-height: 0;
     overflow-y: auto;
     margin-bottom: 10px;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: #e66e00 transparent;
   }
+  .scroll-area::-webkit-scrollbar { width: 5px; }
+  .scroll-area::-webkit-scrollbar-track { background: transparent; }
+  .scroll-area::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ffaa1e, #e66e00);
+    border-radius: 10px;
+  }
+  .scroll-area::-webkit-scrollbar-thumb:hover { background: #ffaa1e; }
   .list { margin-bottom: 16px; }
   .empty { font-size: 11px; color: #444; padding: 10px 2px; font-style: italic; }
 
