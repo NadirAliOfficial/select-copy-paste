@@ -5,15 +5,17 @@
 <title>Select & Paste</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 520px; }
   body {
     width: 320px;
-    max-height: 520px;
     background: #0d0d0d;
     color: #d4d4d4;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     font-size: 13px;
     padding: 16px;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
   .header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
   .logo {
@@ -53,6 +55,12 @@
   }
   .clear-btn:hover { color: #999; }
 
+  .scroll-area {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    margin-bottom: 10px;
+  }
   .list { margin-bottom: 16px; }
   .empty { font-size: 11px; color: #444; padding: 10px 2px; font-style: italic; }
 
@@ -95,16 +103,18 @@
   </label>
 </div>
 
-<div class="section-title">
-  <span>📌 Pinned</span>
-</div>
-<div class="list" id="pinnedList"></div>
+<div class="scroll-area">
+  <div class="section-title">
+    <span>📌 Pinned</span>
+  </div>
+  <div class="list" id="pinnedList"></div>
 
-<div class="section-title">
-  <span>Recent History</span>
-  <span class="clear-btn" id="clearHistory">Clear</span>
+  <div class="section-title">
+    <span>Recent History</span>
+    <span class="clear-btn" id="clearHistory">Clear</span>
+  </div>
+  <div class="list" id="historyList"></div>
 </div>
-<div class="list" id="historyList"></div>
 
 <div class="hint">
   Click any item to paste it into the last field you were typing in. Use the pin icon to keep something around permanently.
