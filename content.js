@@ -1,6 +1,8 @@
 (function () {
   "use strict";
 
+  const HISTORY_LIMIT = 20;
+
   let enabled = true;
   chrome.storage?.local?.get({ enabled: true }, (d) => { enabled = d.enabled !== false; });
   chrome.storage?.onChanged?.addListener((changes, area) => {
@@ -9,10 +11,21 @@
 
   let lastCopied = "";
   let debounceTimer = null;
+  let lastFocusedEditable = null;
+
+  function isEditable(el) {
+    return !!el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable);
+  }
 
   function isPasswordField(el) {
     return !!el && el.tagName === "INPUT" && el.type === "password";
   }
+
+  // Remember the last real editable field the user focused, so the popup
+  // can insert text there even after focus moves to the extension popup.
+  document.addEventListener("focusin", (e) => {
+    if (isEditable(e.target)) lastFocusedEditable = e.target;
+  });
 
   function showToast(rect) {
     const toast = document.createElement("div");
@@ -39,6 +52,14 @@
     }, 700);
   }
 
+  function pushHistory(text) {
+    chrome.storage?.local?.get({ scp_history: [] }, (d) => {
+      const list = d.scp_history.filter((item) => item.text !== text);
+      list.unshift({ text, ts: Date.now() });
+      chrome.storage.local.set({ scp_history: list.slice(0, HISTORY_LIMIT) });
+    });
+  }
+
   function maybeCopySelection() {
     if (!enabled) return;
     const sel = window.getSelection();
@@ -48,11 +69,20 @@
 
     navigator.clipboard.writeText(text).then(() => {
       lastCopied = text;
+      pushHistory(text);
       try {
         const rect = sel.getRangeAt(0).getBoundingClientRect();
         showToast(rect);
       } catch (_) {}
     }).catch(() => {});
+  }
+
+  function insertText(text) {
+    const target = (lastFocusedEditable && lastFocusedEditable.isConnected) ? lastFocusedEditable : document.activeElement;
+    if (!isEditable(target)) return false;
+    target.focus();
+    document.execCommand("insertText", false, text);
+    return true;
   }
 
   // Mouse-drag selection
@@ -68,13 +98,17 @@
   // Double-click an editable field → paste at the cursor
   document.addEventListener("dblclick", async () => {
     if (!enabled) return;
-    const el = document.activeElement;
-    const isEditable = el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable);
-    if (!isEditable) return;
-
+    if (!isEditable(document.activeElement)) return;
     try {
       const text = await navigator.clipboard.readText();
       if (text) document.execCommand("insertText", false, text);
     } catch (_) {}
+  });
+
+  // Insert requests coming from the popup (history/pin clicks)
+  chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    if (msg.type === "SCP_INSERT_TEXT") {
+      sendResponse({ ok: insertText(msg.text) });
+    }
   });
 })();

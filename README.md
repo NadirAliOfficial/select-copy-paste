@@ -10,6 +10,8 @@ A tiny Chrome extension: select text to copy it instantly, double-click any edit
 - **Copy confirmation** — a small "Copied" flash confirms it worked
 - **Password field safe** — never auto-copies out of a password input
 - **One-click toggle** — pause it from the popup without disabling the extension
+- **Clipboard history** — remembers your last 20 copies; click any of them in the popup to paste it into the field you were last typing in
+- **Pinned snippets** — pin frequently-used text (email, canned replies, etc.) so it never falls out of history, up to 9 pins
 
 ## Installation
 

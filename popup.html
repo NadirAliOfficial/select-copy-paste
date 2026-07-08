@@ -6,12 +6,14 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    width: 260px;
+    width: 320px;
+    max-height: 520px;
     background: #0d0d0d;
     color: #d4d4d4;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     font-size: 13px;
     padding: 16px;
+    overflow-y: auto;
   }
   .header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
   .logo {
@@ -24,7 +26,7 @@
   .row {
     display: flex; align-items: center; justify-content: space-between;
     background: #111; border: 1px solid #1e1e1e; border-radius: 10px;
-    padding: 11px 13px;
+    padding: 11px 13px; margin-bottom: 14px;
   }
   .row-label { font-size: 12.5px; color: #ccc; font-weight: 500; }
   .switch { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
@@ -39,7 +41,40 @@
   }
   input:checked + .slider { background: #4a1f00; border-color: #e66e00; }
   input:checked + .slider:before { background: #ffaa1e; transform: translateX(16px); }
-  .hint { font-size: 10.5px; color: #555; line-height: 1.5; margin-top: 12px; }
+
+  .section-title {
+    font-size: 10px; font-weight: 700; color: #e66e00;
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .clear-btn {
+    font-size: 10px; color: #555; cursor: pointer; text-transform: none;
+    letter-spacing: 0; font-weight: 500;
+  }
+  .clear-btn:hover { color: #999; }
+
+  .list { margin-bottom: 16px; }
+  .empty { font-size: 11px; color: #444; padding: 10px 2px; font-style: italic; }
+
+  .item {
+    display: flex; align-items: center; gap: 8px;
+    background: #111; border: 1px solid #1e1e1e; border-radius: 8px;
+    padding: 8px 10px; margin-bottom: 6px; cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .item:hover { border-color: #e66e00; }
+  .item-text {
+    flex: 1; font-size: 12px; color: #ccc;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .item-btn {
+    flex-shrink: 0; background: none; border: none; cursor: pointer;
+    color: #555; font-size: 13px; padding: 2px 4px; line-height: 1;
+  }
+  .item-btn:hover { color: #ffaa1e; }
+  .item-btn.remove:hover { color: #e05252; }
+
+  .hint { font-size: 10.5px; color: #555; line-height: 1.5; margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -60,8 +95,19 @@
   </label>
 </div>
 
+<div class="section-title">
+  <span>📌 Pinned</span>
+</div>
+<div class="list" id="pinnedList"></div>
+
+<div class="section-title">
+  <span>Recent History</span>
+  <span class="clear-btn" id="clearHistory">Clear</span>
+</div>
+<div class="list" id="historyList"></div>
+
 <div class="hint">
-  Select any text with your mouse or keyboard to copy it automatically. Double-click an input, textarea, or editable field to paste.
+  Click any item to paste it into the last field you were typing in. Use the pin icon to keep something around permanently.
 </div>
 
 <script src="popup.js"></script>

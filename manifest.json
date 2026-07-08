@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Select & Paste",
-  "version": "1.0.0",
-  "description": "Select text to copy it instantly. Double-click any input to paste. Works with mouse or keyboard selection.",
+  "version": "1.1.0",
+  "description": "Select text to copy it instantly, double-click to paste. Includes clipboard history and pinned snippets.",
 
   "permissions": ["clipboardRead", "clipboardWrite", "storage"],
 
