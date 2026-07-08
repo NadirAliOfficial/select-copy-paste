@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Select & Paste</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 260px;
+    background: #0d0d0d;
+    color: #d4d4d4;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 13px;
+    padding: 16px;
+  }
+  .header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .logo {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: linear-gradient(135deg, #ffaa1e, #e66e00);
+    flex-shrink: 0;
+  }
+  h1 { font-size: 14px; color: #fff; }
+  .sub { font-size: 10.5px; color: #666; margin-top: 1px; }
+  .row {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #111; border: 1px solid #1e1e1e; border-radius: 10px;
+    padding: 11px 13px;
+  }
+  .row-label { font-size: 12.5px; color: #ccc; font-weight: 500; }
+  .switch { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; inset: 0; background: #252525; border-radius: 20px;
+    cursor: pointer; transition: 0.2s; border: 1px solid #333;
+  }
+  .slider:before {
+    content: ''; position: absolute; width: 14px; height: 14px; left: 2px; top: 2px;
+    background: #555; border-radius: 50%; transition: 0.2s;
+  }
+  input:checked + .slider { background: #4a1f00; border-color: #e66e00; }
+  input:checked + .slider:before { background: #ffaa1e; transform: translateX(16px); }
+  .hint { font-size: 10.5px; color: #555; line-height: 1.5; margin-top: 12px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo"></div>
+  <div>
+    <h1>Select & Paste</h1>
+    <div class="sub">Select to copy, double-click to paste</div>
+  </div>
+</div>
+
+<div class="row">
+  <span class="row-label">Enabled</span>
+  <label class="switch">
+    <input type="checkbox" id="enabled" checked>
+    <span class="slider"></span>
+  </label>
+</div>
+
+<div class="hint">
+  Select any text with your mouse or keyboard to copy it automatically. Double-click an input, textarea, or editable field to paste.
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
